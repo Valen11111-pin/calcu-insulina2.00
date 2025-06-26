@@ -1,2 +1,233 @@
 # calcu-insulina2.00
 calculadora insulina valen
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Insulina</title>
+    <style>
+        /* Estilos generales del cuerpo */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Contenedor principal de la calculadora */
+        .calculadora-container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        /* Título principal */
+        h1 {
+            color: #1a73e8;
+            margin-bottom: 15px;
+            font-size: 2em;
+        }
+        
+        /* Subtítulo o descripción */
+        .subtitulo {
+            color: #5f6368;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+        }
+
+        /* Estilo para las etiquetas de los campos */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #3c4043;
+            text-align: left;
+        }
+
+        /* Campo de entrada numérico */
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 1.2em;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+          -webkit-appearance: none; 
+          margin: 0; 
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+
+        /* Botón de cálculo */
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #1a73e8;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #155ab6;
+        }
+
+        /* Contenedor de resultados (común para dosis y hora) */
+        .resultado-container {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        /* Estilo específico para la dosis */
+        #resultado-dosis-container {
+            background-color: #e8f0fe;
+            border-left: 5px solid #1a73e8;
+        }
+        #resultado-dosis-container h2 {
+             margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.2em;
+        }
+        #resultado-dosis {
+            font-size: 2.8em;
+            font-weight: bold;
+            color: #1a73e8;
+            margin: 0;
+        }
+        #resultado-dosis span {
+            font-size: 0.5em;
+            font-weight: normal;
+            color: #5f6368;
+        }
+        
+        /* Estilo específico para la hora */
+        #resultado-hora-container {
+            background-color: #fff8e1;
+            border-left: 5px solid #f9a825;
+        }
+        #resultado-hora-container h2 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.2em;
+        }
+        #texto-hora {
+            font-size: 1.1em;
+            color: #333;
+            margin: 0;
+        }
+        #texto-hora small {
+            display: block;
+            font-weight: bold;
+            margin-top: 8px;
+            color: #c53929;
+        }
+
+        /* Aviso de seguridad */
+        .disclaimer {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fce8e6;
+            border: 1px solid #f4c7c3;
+            color: #c5221f;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 500;
+            text-align: justify;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculadora-container">
+        <h1>Calculadora de Insulina</h1>
+        
+        <p class="subtitulo">Basado en la relación: <strong>1 unidad de insulina</strong> por cada <strong>15 gramos de carbohidratos</strong>.</p>
+
+        <form id="insulina-form" onsubmit="return false;">
+            <label for="carbohidratos">Cantidad de Carbohidratos (en gramos)</label>
+            <input type="number" id="carbohidratos" placeholder="Ej: 60" min="0" required>
+            
+            <button type="button" onclick="calcularInsulina()">Calcular Dosis</button>
+        </form>
+
+        <div id="resultado-dosis-container" class="resultado-container" style="display: none;">
+            <h2>Dosis de Insulina (Redondeada)</h2>
+            <p id="resultado-dosis">0 <span>unidades</span></p>
+        </div>
+        
+        <div id="resultado-hora-container" class="resultado-container" style="display: none;">
+            <h2>Sugerencia de Colocación</h2>
+            <p id="texto-hora">
+                Aplicar <strong>15-20 minutos antes</strong> de la comida.
+                <small>¡Confirma siempre este tiempo con tu médico!</small>
+            </p>
+        </div>
+
+        <div class="disclaimer">
+            <strong>ADVERTENCIA IMPORTANTE:</strong> Esta calculadora es una herramienta de referencia y no debe reemplazar el consejo, diagnóstico o tratamiento de un profesional de la salud. Las dosis de insulina deben ser personalizadas y ajustadas por tu médico o educador en diabetes. No utilices esta herramienta para tomar decisiones médicas.
+        </div>
+    </div>
+
+    <script>
+        function calcularInsulina() {
+            const carbohidratosInput = document.getElementById('carbohidratos');
+            const carbohidratos = parseFloat(carbohidratosInput.value);
+
+            const resultadoDosisContainer = document.getElementById('resultado-dosis-container');
+            const resultadoHoraContainer = document.getElementById('resultado-hora-container');
+
+            if (isNaN(carbohidratos) || carbohidratos < 0) {
+                alert("Por favor, ingresa un valor numérico válido para los carbohidratos.");
+                resultadoDosisContainer.style.display = 'none';
+                resultadoHoraContainer.style.display = 'none';
+                return;
+            }
+
+            const relacion = 15;
+            const dosis = carbohidratos / relacion;
+            
+            // --- CAMBIO: Redondear al entero más cercano ---
+            const dosisRedondeada = Math.round(dosis);
+
+            const resultadoDosis = document.getElementById('resultado-dosis');
+            
+            // --- CAMBIO: Mostrar el resultado redondeado ---
+            resultadoDosis.innerHTML = ${dosisRedondeada} <span>unidades</span>;
+            
+            // Hacer visibles ambos contenedores de resultados
+            resultadoDosisContainer.style.display = 'block';
+            resultadoHoraContainer.style.display = 'block';
+        }
+
+        document.getElementById('carbohidratos').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                calcularInsulina();
+            }
+        });
+    </script>
+
+</body>
+</html>
